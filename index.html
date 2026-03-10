@@ -125,7 +125,7 @@
   <div class="status-bar"><span id="dot"></span><span id="status">connecting</span></div>
 
   <div class="compose">
-    <textarea id="input" placeholder="say something…" rows="3"></textarea>
+    <textarea id="input" placeholder="say something… (shift+enter for newline)" rows="3"></textarea>
     <div class="compose-footer">
       <button id="postBtn" onclick="post()">post</button>
     </div>
@@ -192,7 +192,10 @@
     }
 
     document.getElementById('input').addEventListener('keydown', e => {
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) post();
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        post();
+      }
     });
 
     function esc(s) {
