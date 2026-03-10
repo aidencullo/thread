@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>thread</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fff;
+      color: #111;
+      max-width: 580px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
+    }
+
+    h1 {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: #999;
+      text-transform: lowercase;
+      margin-bottom: 32px;
+    }
+
+    .compose {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: none;
+      outline: none;
+      resize: none;
+      font-size: 15px;
+      font-family: inherit;
+      min-height: 72px;
+      line-height: 1.5;
+      color: #111;
+      background: transparent;
+    }
+
+    .compose-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 8px 10px;
+      border-top: 1px solid #e0e0e0;
+      background: #fafafa;
+    }
+
+    button {
+      background: #111;
+      color: #fff;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 5px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.02em;
+      transition: background 0.1s;
+    }
+
+    button:hover { background: #333; }
+    button:disabled { background: #ccc; cursor: default; }
+
+    .thread { display: flex; flex-direction: column; }
+
+    .comment {
+      padding: 16px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .comment:last-child { border-bottom: none; }
+
+    .comment-text {
+      font-size: 15px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .comment-time {
+      font-size: 12px;
+      color: #bbb;
+      margin-top: 6px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #ccc;
+      padding: 48px 0;
+      font-size: 14px;
+    }
+
+    #dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ccc;
+      margin-right: 6px;
+      vertical-align: middle;
+      transition: background 0.3s;
+    }
+
+    #dot.live { background: #4caf50; }
+
+    .status-bar {
+      font-size: 12px;
+      color: #bbb;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>thread</h1>
+
+  <div class="status-bar"><span id="dot"></span><span id="status">connecting</span></div>
+
+  <div class="compose">
+    <textarea id="input" placeholder="say something…" rows="3"></textarea>
+    <div class="compose-footer">
+      <button id="postBtn" onclick="post()">post</button>
+    </div>
+  </div>
+
+  <div class="thread" id="thread">
+    <div class="empty">be the first to say something</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+  <script>
+    const gun = Gun({
+      peers: [
+        'wss://relay.peer.ooo/gun',
+        'https://gun-us.herokuapp.com/gun',
+        'https://gun-eu.herokuapp.com/gun',
+      ]
+    });
+
+    const KEY = 'thread-aidencullo-v1';
+    const db = gun.get(KEY);
+    const threadEl = document.getElementById('thread');
+    const dotEl = document.getElementById('dot');
+    const statusEl = document.getElementById('status');
+
+    let comments = {};
+
+    setTimeout(() => {
+      dotEl.classList.add('live');
+      statusEl.textContent = 'live';
+    }, 1500);
+
+    db.map().on((data, id) => {
+      if (data && data.text && data.ts) {
+        comments[id] = data;
+        render();
+      }
+    });
+
+    function render() {
+      const sorted = Object.values(comments)
+        .filter(c => c && c.text)
+        .sort((a, b) => a.ts - b.ts);
+
+      if (!sorted.length) {
+        threadEl.innerHTML = '<div class="empty">be the first to say something</div>';
+        return;
+      }
+
+      threadEl.innerHTML = sorted.map(c => `
+        <div class="comment">
+          <div class="comment-text">${esc(c.text)}</div>
+          <div class="comment-time">${ago(c.ts)}</div>
+        </div>
+      `).join('');
+    }
+
+    function post() {
+      const input = document.getElementById('input');
+      const text = input.value.trim();
+      if (!text) return;
+      db.set({ text, ts: Date.now() });
+      input.value = '';
+    }
+
+    document.getElementById('input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) post();
+    });
+
+    function esc(s) {
+      return s
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function ago(ts) {
+      const s = Math.floor((Date.now() - ts) / 1000);
+      if (s < 10) return 'just now';
+      if (s < 60) return `${s}s ago`;
+      const m = Math.floor(s / 60);
+      if (m < 60) return `${m}m ago`;
+      const h = Math.floor(m / 60);
+      if (h < 24) return `${h}h ago`;
+      return `${Math.floor(h / 24)}d ago`;
+    }
+
+    setInterval(render, 30000);
+  </script>
+</body>
+</html>
