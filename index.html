@@ -8,131 +8,67 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #fff;
-      color: #111;
-      max-width: 580px;
-      margin: 0 auto;
-      padding: 48px 20px 80px;
-    }
-
-    h1 {
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      color: #999;
-      text-transform: lowercase;
-      margin-bottom: 32px;
-    }
-
-    .compose {
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 32px;
-    }
-
-    textarea {
-      width: 100%;
-      padding: 14px 16px;
-      border: none;
-      outline: none;
-      resize: none;
-      font-size: 15px;
-      font-family: inherit;
-      min-height: 72px;
-      line-height: 1.5;
-      color: #111;
-      background: transparent;
-    }
-
-    .compose-footer {
+      min-height: 100vh;
+      background: #e8e4dc;
       display: flex;
-      justify-content: flex-end;
-      padding: 8px 10px;
-      border-top: 1px solid #e0e0e0;
-      background: #fafafa;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 60px 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 
-    button {
-      background: #111;
-      color: #fff;
-      border: none;
-      padding: 7px 14px;
-      border-radius: 5px;
-      font-size: 13px;
-      cursor: pointer;
-      font-family: inherit;
-      letter-spacing: 0.02em;
-      transition: background 0.1s;
+    .page {
+      background: #fffef9;
+      width: 100%;
+      max-width: 560px;
+      min-height: 80vh;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
+      padding: 48px 52px 64px;
     }
 
-    button:hover { background: #333; }
-    button:disabled { background: #ccc; cursor: default; }
-
-    .thread { display: flex; flex-direction: column; }
-
-    .comment {
-      padding: 16px 0;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    .comment:last-child { border-bottom: none; }
+    .thread { display: flex; flex-direction: column; gap: 20px; }
 
     .comment-text {
       font-size: 15px;
-      line-height: 1.6;
+      line-height: 1.65;
+      color: #222;
       white-space: pre-wrap;
       word-break: break-word;
     }
 
     .comment-time {
-      font-size: 12px;
-      color: #bbb;
-      margin-top: 6px;
+      font-size: 11px;
+      color: #c0bdb5;
+      margin-top: 4px;
     }
 
-    .empty {
-      text-align: center;
-      color: #ccc;
-      padding: 48px 0;
-      font-size: 14px;
+    .divider {
+      height: 1px;
+      background: #f0ede6;
+      margin: 4px 0;
     }
 
-    #dot {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #ccc;
-      margin-right: 6px;
-      vertical-align: middle;
-      transition: background 0.3s;
+    textarea {
+      width: 100%;
+      border: none;
+      outline: none;
+      resize: none;
+      font-size: 15px;
+      font-family: inherit;
+      line-height: 1.65;
+      color: #222;
+      background: transparent;
+      caret-color: #888;
     }
 
-    #dot.live { background: #4caf50; }
-
-    .status-bar {
-      font-size: 12px;
-      color: #bbb;
-      margin-bottom: 20px;
-    }
+    textarea::placeholder { color: #ccc; }
   </style>
 </head>
 <body>
-  <h1>thread</h1>
-
-  <div class="status-bar"><span id="dot"></span><span id="status">connecting</span></div>
-
-  <div class="compose">
-    <textarea id="input" placeholder="say something… (shift+enter for newline)" rows="3"></textarea>
-    <div class="compose-footer">
-      <button id="postBtn" onclick="post()">post</button>
-    </div>
-  </div>
-
-  <div class="thread" id="thread">
-    <div class="empty">be the first to say something</div>
+  <div class="page">
+    <div class="thread" id="thread"></div>
+    <div class="divider" id="divider" style="display:none; margin-top:20px; margin-bottom:20px;"></div>
+    <textarea id="input" rows="2" placeholder=""></textarea>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
@@ -145,18 +81,10 @@
       ]
     });
 
-    const KEY = 'thread-aidencullo-v1';
-    const db = gun.get(KEY);
+    const db = gun.get('thread-aidencullo-v1');
     const threadEl = document.getElementById('thread');
-    const dotEl = document.getElementById('dot');
-    const statusEl = document.getElementById('status');
-
+    const dividerEl = document.getElementById('divider');
     let comments = {};
-
-    setTimeout(() => {
-      dotEl.classList.add('live');
-      statusEl.textContent = 'live';
-    }, 1500);
 
     db.map().on((data, id) => {
       if (data && data.text && data.ts) {
@@ -170,17 +98,14 @@
         .filter(c => c && c.text)
         .sort((a, b) => a.ts - b.ts);
 
-      if (!sorted.length) {
-        threadEl.innerHTML = '<div class="empty">be the first to say something</div>';
-        return;
-      }
-
       threadEl.innerHTML = sorted.map(c => `
         <div class="comment">
           <div class="comment-text">${esc(c.text)}</div>
           <div class="comment-time">${ago(c.ts)}</div>
         </div>
       `).join('');
+
+      dividerEl.style.display = sorted.length ? 'block' : 'none';
     }
 
     function post() {
