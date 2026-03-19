@@ -137,16 +137,27 @@
     }
 
     .tagline {
-      font-size: 22px;
+      font-size: 30px;
       color: #999;
       font-style: italic;
       text-align: center;
       max-width: 560px;
-      margin-bottom: 32px;
+      margin-bottom: 12px;
       font-weight: 300;
       letter-spacing: 0.5px;
       opacity: 0;
       animation: fadeIn 2s ease forwards;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #b5b2aa;
+      text-align: center;
+      max-width: 420px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeIn 2.5s ease 0.5s forwards;
     }
 
     @keyframes fadeIn {
@@ -157,6 +168,7 @@
 </head>
 <body>
   <div class="tagline">Join the common thread<span class="cursor"></span></div>
+  <div class="subtitle">One thread. Everyone sees it. No censorship, no ownership — just quorum.</div>
   <div class="loading" id="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
   <div class="page" id="page" style="display:none;">
     <div class="thread" id="thread"></div>
