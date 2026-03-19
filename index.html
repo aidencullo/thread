@@ -73,20 +73,26 @@
     .scroll-btn {
       position: fixed;
       bottom: 24px;
-      right: 24px;
-      width: 40px;
-      height: 40px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
       background: #fffef9;
       border: 1px solid #e0ddd6;
-      border-radius: 50%;
+      border-radius: 20px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 8px 20px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      font-size: 18px;
+      font-size: 13px;
       color: #888;
-      transition: all 0.2s;
+      font-family: inherit;
+      font-style: italic;
+      transition: all 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .scroll-btn.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
     }
     .scroll-btn:hover { background: #f5f3ed; color: #555; }
 
@@ -151,7 +157,7 @@
     <textarea id="input" rows="2" placeholder="enter to comment" style="display:none;"></textarea>
   </div>
 
-  <button class="scroll-btn" onclick="document.getElementById('input').scrollIntoView({behavior:'smooth'}); document.getElementById('input').focus();">&#8595;</button>
+  <button class="scroll-btn" id="scroll-btn" onclick="document.getElementById('input').scrollIntoView({behavior:'smooth'}); document.getElementById('input').focus();">see what's new &#8595;</button>
 
   <script>
     const SUPABASE_URL = 'https://dekiekoxtmesfxjvakbd.supabase.co';
@@ -196,6 +202,7 @@
         </div>
       `).join('');
       dividerEl.style.display = comments.length ? 'block' : 'none';
+      checkScroll();
     }
 
     async function post() {
@@ -276,6 +283,19 @@
       if (h < 24) return `${h}h ago`;
       return `${Math.floor(h / 24)}d ago`;
     }
+
+    // Show scroll button only when content overflows
+    function checkScroll() {
+      const btn = document.getElementById('scroll-btn');
+      const input = document.getElementById('input');
+      if (!input || input.style.display === 'none') { btn.classList.remove('visible'); return; }
+      const rect = input.getBoundingClientRect();
+      const isOffscreen = rect.bottom > window.innerHeight;
+      btn.classList.toggle('visible', isOffscreen);
+    }
+
+    window.addEventListener('scroll', checkScroll);
+    window.addEventListener('resize', checkScroll);
 
     // Initial load + realtime
     fetchComments();
