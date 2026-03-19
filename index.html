@@ -83,6 +83,31 @@
     }
     .scroll-btn:hover { background: #f5f3ed; color: #555; }
 
+    .loading {
+      text-align: center;
+      padding: 40px 0;
+      color: #c0bdb5;
+      font-size: 14px;
+      font-style: italic;
+    }
+
+    .loading-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #c0bdb5;
+      border-radius: 50%;
+      margin: 0 3px;
+      animation: pulse 1.2s infinite;
+    }
+    .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes pulse {
+      0%, 80%, 100% { opacity: 0.3; }
+      40% { opacity: 1; }
+    }
+
     .tagline {
       font-size: 22px;
       color: #999;
@@ -98,7 +123,9 @@
 <body>
   <div class="tagline">comment what you like... no restrictions</div>
   <div class="page">
-    <div class="thread" id="thread"></div>
+    <div class="thread" id="thread">
+      <div class="loading" id="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
+    </div>
     <div class="divider" id="divider" style="display:none; margin-top:20px; margin-bottom:20px;"></div>
     <textarea id="input" rows="2" placeholder="enter to comment"></textarea>
   </div>
@@ -121,6 +148,8 @@
     }
 
     function render(comments) {
+      const loading = document.getElementById('loading');
+      if (loading) loading.remove();
       threadEl.innerHTML = comments.map(c => `
         <div class="comment">
           <div class="comment-text">${esc(c.text)}</div>
