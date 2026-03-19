@@ -108,6 +108,15 @@
       40% { opacity: 1; }
     }
 
+    .blink {
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
     .tagline {
       font-size: 22px;
       color: #999;
@@ -121,7 +130,7 @@
   </style>
 </head>
 <body>
-  <div class="tagline">say anything. no rules. no accounts. just you.</div>
+  <div class="tagline">say anything<span class="blink">...</span> no rules. no accounts. just you.</div>
   <div class="page">
     <div class="thread" id="thread">
       <div class="loading" id="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
