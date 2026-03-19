@@ -115,8 +115,14 @@
       40% { opacity: 1; }
     }
 
-    .blink {
-      animation: blink 1.5s infinite;
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: #999;
+      margin-left: 4px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
     }
 
     @keyframes blink {
@@ -137,7 +143,7 @@
   </style>
 </head>
 <body>
-  <div class="tagline">Join the common thread<span class="blink">...</span></div>
+  <div class="tagline">Join the common thread...<span class="cursor"></span></div>
   <div class="loading" id="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
   <div class="page" id="page" style="display:none;">
     <div class="thread" id="thread"></div>
