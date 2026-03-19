@@ -1,6 +1,6 @@
 # thread
 
-Minimal anonymous comment thread app.
+One thread. Everyone sees it. No censorship, no ownership — just quorum.
 
 ## Architecture
 
@@ -13,15 +13,23 @@ Minimal anonymous comment thread app.
 - **GitHub Pages:** https://aidencullo.github.io/thread/
 - **Vercel:** https://thread-delta-six.vercel.app
 
+## UI
+
+- Full-screen hero page: big "thread" title with blinking terminal cursor, subtitle, and "Join the thread" CTA button
+- CTA smooth-scrolls to the comment section
+- Loading dots shown while fetching comments; page card hidden until ready
+- Hero elements fade in with staggered animations
+
 ## Database
 
 - **Table:** `comments` — columns: `id` (uuid, auto), `text` (text), `username` (text), `created_at` (timestamptz, auto)
 - **RLS:** Public read and insert, no update/delete
 - **Auth:** Anon key embedded in client — safe because RLS restricts operations
+- **Free tier note:** Supabase pauses inactive projects after 7 days of no API requests
 
 ## Users
 
-Each visitor gets an auto-generated anonymous username (e.g. `swift-fox-472`) stored in localStorage. No accounts or auth.
+Random anonymous username generated on every page load (e.g. `bold-owl-317`). No persistence, no localStorage, no accounts. Format: `adjective-noun-number` from 10 adjectives x 10 nouns x 900 numbers = 90,000 combinations.
 
 ## API
 
@@ -38,3 +46,4 @@ WebSocket connection to Supabase Realtime listens for INSERT events on `comments
 
 - Push to `main` to deploy (both GitHub Pages and Vercel)
 - No PR workflow, no branches
+- Update README.md and CLAUDE.md when features change
