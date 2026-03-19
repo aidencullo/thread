@@ -123,8 +123,8 @@
 
     .cursor {
       display: inline-block;
-      width: 2px;
-      height: 1em;
+      width: 0.6em;
+      height: 1.1em;
       background: #999;
       margin-left: 4px;
       vertical-align: text-bottom;
@@ -166,20 +166,11 @@
     const threadEl = document.getElementById('thread');
     const dividerEl = document.getElementById('divider');
 
-    // Generate or retrieve anonymous username
-    function getUsername() {
-      let name = localStorage.getItem('thread-username');
-      if (!name) {
-        const adj = ['swift','quiet','bold','calm','keen','warm','cool','wild','fair','bright'];
-        const noun = ['fox','owl','elm','ray','dew','ash','sky','oak','gem','ink'];
-        const num = Math.floor(Math.random() * 900) + 100;
-        name = adj[Math.floor(Math.random() * adj.length)] + '-' + noun[Math.floor(Math.random() * noun.length)] + '-' + num;
-        localStorage.setItem('thread-username', name);
-      }
-      return name;
-    }
-
-    const username = getUsername();
+    // Generate anonymous username per session
+    const adj = ['swift','quiet','bold','calm','keen','warm','cool','wild','fair','bright'];
+    const noun = ['fox','owl','elm','ray','dew','ash','sky','oak','gem','ink'];
+    const num = Math.floor(Math.random() * 900) + 100;
+    const username = adj[Math.floor(Math.random() * adj.length)] + '-' + noun[Math.floor(Math.random() * noun.length)] + '-' + num;
 
     async function fetchComments() {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/comments?select=*&order=created_at.asc`, {
