@@ -63,6 +63,26 @@
 
     textarea::placeholder { color: #ccc; font-style: italic; }
 
+    .scroll-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 40px;
+      height: 40px;
+      background: #fffef9;
+      border: 1px solid #e0ddd6;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-size: 18px;
+      color: #888;
+      transition: all 0.2s;
+    }
+    .scroll-btn:hover { background: #f5f3ed; color: #555; }
+
     .tagline {
       font-size: 12px;
       color: #c0bdb5;
@@ -80,6 +100,8 @@
     <div class="divider" id="divider" style="display:none; margin-top:20px; margin-bottom:20px;"></div>
     <textarea id="input" rows="2" placeholder="enter to comment"></textarea>
   </div>
+
+  <button class="scroll-btn" onclick="document.getElementById('input').scrollIntoView({behavior:'smooth'}); document.getElementById('input').focus();">&#8595;</button>
 
   <script>
     const SUPABASE_URL = 'https://dekiekoxtmesfxjvakbd.supabase.co';
