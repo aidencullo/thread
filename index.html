@@ -194,6 +194,7 @@
       `).join('');
       dividerEl.style.display = comments.length ? 'block' : 'none';
       checkScroll();
+      document.getElementById('input').scrollIntoView({ behavior: 'smooth' });
     }
 
     async function post() {
