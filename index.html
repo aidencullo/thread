@@ -136,7 +136,7 @@
       <div class="loading" id="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
     </div>
     <div class="divider" id="divider" style="display:none; margin-top:20px; margin-bottom:20px;"></div>
-    <textarea id="input" rows="2" placeholder="enter to comment"></textarea>
+    <textarea id="input" rows="2" placeholder="enter to comment" style="display:none;"></textarea>
   </div>
 
   <button class="scroll-btn" onclick="document.getElementById('input').scrollIntoView({behavior:'smooth'}); document.getElementById('input').focus();">&#8595;</button>
@@ -159,6 +159,7 @@
     function render(comments) {
       const loading = document.getElementById('loading');
       if (loading) loading.remove();
+      document.getElementById('input').style.display = '';
       threadEl.innerHTML = comments.map(c => `
         <div class="comment">
           <div class="comment-text">${esc(c.text)}</div>
