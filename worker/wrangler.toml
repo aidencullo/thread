@@ -1,0 +1,8 @@
+name = "thread-api"
+main = "index.js"
+compatibility_date = "2026-11-24"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "thread-comments"
+database_id = "869a150a-1eae-4bd5-9e46-2ce6187d0e90"
